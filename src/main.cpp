@@ -139,8 +139,7 @@ void setup() {
   pinMode(ledPin1, OUTPUT);
   pinMode(ledPin2, OUTPUT);
   pinMode(ledPin3, OUTPUT);
- // initFS();
-  // initWiFi();
+
 
 
   if(!LittleFS.begin()){
@@ -160,8 +159,8 @@ void setup() {
   }
   file.close();
 
-
-
+  initFS();
+  initWiFi();
   initWebSocket();
   
   // Web Server Root URL
