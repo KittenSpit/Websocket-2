@@ -37,10 +37,12 @@ String message = "";
 String sliderValue1 = "0";
 String sliderValue2 = "0";
 String sliderValue3 = "0";
+String sliderValue4 = "0";
 
 int dutyCycle1;
 int dutyCycle2;
 int dutyCycle3;
+int dutyCycle4;
 
 //Json Variable to Hold Slider Values
 JSONVar sliderValues;
@@ -50,7 +52,7 @@ String getSliderValues(){
   sliderValues["sliderValue1"] = String(sliderValue1);
   sliderValues["sliderValue2"] = String(sliderValue2);
   sliderValues["sliderValue3"] = String(sliderValue3);
-
+  sliderValues["sliderValue4"] = String(sliderValue4);
   String jsonString = JSON.stringify(sliderValues);
   return jsonString;
 }
@@ -107,6 +109,13 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
       Serial.print(getSliderValues());
       notifyClients(getSliderValues());
     }
+    if (message.indexOf("4s") >= 0) {
+      sliderValue4 = message.substring(2);
+      dutyCycle4 = map(sliderValue4.toInt(), 0, 100, 0, 1023);
+      Serial.println(dutyCycle4);
+      Serial.print(getSliderValues());
+      notifyClients(getSliderValues());
+    }
     if (strcmp((char*)data, "getValues") == 0) {
       notifyClients(getSliderValues());
     }
@@ -140,8 +149,7 @@ void setup() {
   pinMode(ledPin2, OUTPUT);
   pinMode(ledPin3, OUTPUT);
 
-
-
+// Added **************
   if(!LittleFS.begin()){
     Serial.println("An Error has occurred while mounting LittleFS");
     return;
@@ -158,6 +166,8 @@ void setup() {
     Serial.write(file.read());
   }
   file.close();
+//*************
+
 
   initFS();
   initWiFi();

@@ -34,6 +34,7 @@ function updateSliderPWM(element) {
     var sliderNumber = element.id.charAt(element.id.length-1);
     var sliderValue = document.getElementById(element.id).value;
     document.getElementById("sliderValue"+sliderNumber).innerHTML = sliderValue;
+    console.log('updateSliderPWM value: ');
     console.log(sliderValue);
     websocket.send(sliderNumber+"s"+sliderValue.toString());
 }
