@@ -1,0 +1,4 @@
+Wait2	KEYWORD1
+ok_togo	KEYWORD2
+
+

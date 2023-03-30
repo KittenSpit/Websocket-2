@@ -15,13 +15,14 @@
 #include <ESPAsyncWebServer.h>
 #include "LittleFS.h"
 #include <Arduino_JSON.h>
+#include "Wait2.h"
 
 // Replace with your network credentials
 
 const char* ssid = "PHD1 2.4";
 const char* password = "Andrew1Laura2";
 
-
+  Wait2 outputNow (10000);
 
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
@@ -149,6 +150,8 @@ void setup() {
   pinMode(ledPin2, OUTPUT);
   pinMode(ledPin3, OUTPUT);
 
+
+
 // Added **************
   if(!LittleFS.begin()){
     Serial.println("An Error has occurred while mounting LittleFS");
@@ -189,5 +192,7 @@ void loop() {
   analogWrite(ledPin2, dutyCycle2);
   analogWrite(ledPin3, dutyCycle3);
 
+if (outputNow.ok_togo()) {Serial.print("Output Now "); Serial.println(millis());}
+  
   ws.cleanupClients();
 }
