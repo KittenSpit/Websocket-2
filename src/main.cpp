@@ -243,6 +243,14 @@ if (string_2 != old_string)
    old_string=string_2;
   //---------------------------------------------------------------------
 }
-if (outputNow.ok_togo()) {Serial.print("Output Now "); Serial.println(millis());}
+if (outputNow.ok_togo()) {
+  Serial.print("Output Now "); 
+  Serial.println(millis()); 
+  sliderValue1=75;
+     dutyCycle1 = map(sliderValue1.toInt(), 0, 100, 0, 1023);
+      Serial.println(dutyCycle1);
+      Serial.print(getSliderValues());
+      notifyClients(getSliderValues());
+      }
   ws.cleanupClients();
 }
