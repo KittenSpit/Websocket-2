@@ -37,13 +37,13 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 const char* ssid = "PHD1 2.4";
 const char* password = "Andrew1Laura2";
 
-  Wait2 outputNow (5000);
+Wait2 outputNow (5000);
 
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
 // Create a WebSocket object
-
 AsyncWebSocket ws("/ws");
+
 // Set LED GPIO
 const int ledPin1 = 14;
 const int ledPin2 = 12;
@@ -60,9 +60,12 @@ int dutyCycle2;
 int dutyCycle3;
 int dutyCycle4;
 
-  int i=0;
-  String string_2 = "";
-  String old_string = "";
+String string_1 = "";
+String old_string_1 = "";
+String string_2 = "";
+String old_string_2 = "";
+String string_3 = "";
+String old_string_3 = "";
 
 //Json Variable to Hold Slider Values
 JSONVar sliderValues;
@@ -110,6 +113,7 @@ void initWiFi() {
     delay(1000);
   }
   Serial.println(WiFi.localIP());
+  delay(1000);
 }
 
 void notifyClients(String sliderValues) {
@@ -234,15 +238,35 @@ void loop() {
   analogWrite(ledPin3, dutyCycle3);
 
  
-  string_2 = String(dutyCycle1); 
-if (string_2 != old_string)
-{
-  //---------------------------------------------------------------------
-   Display_String(old_string,0,0,2,0); // pass string, x, y, size, 0=clear
-   Display_String(string_2,0,0,2,1); // pass string, x, y, size, 1=white
-   old_string=string_2;
-  //---------------------------------------------------------------------
-}
+  string_1 = String(dutyCycle1); 
+  string_2 = String(dutyCycle2); 
+  string_3 = String(dutyCycle3); 
+  
+//---------------------------------------------------------------------
+  if (string_1 != old_string_1)
+  {
+    Display_String(old_string_1,0,0,2,0); // pass string, x, y, size, 0=clear
+    Display_String(string_1,0,0,2,1); // pass string, x, y, size, 1=white
+    old_string_1=string_1;
+  }
+//---------------------------------------------------------------------
+//---------------------------------------------------------------------
+  if (string_2 != old_string_2)
+  {
+    Display_String(old_string_2,0,17,2,0); // pass string, x, y, size, 0=clear
+    Display_String(string_2,0,17,2,1); // pass string, x, y, size, 1=white
+    old_string_2=string_2;
+  }
+//---------------------------------------------------------------------
+//---------------------------------------------------------------------
+  if (string_3 != old_string_3)
+  {
+    Display_String(old_string_3,0,35,2,0); // pass string, x, y, size, 0=clear
+    Display_String(string_3,0,35,2,1); // pass string, x, y, size, 1=white
+    old_string_3=string_3;
+  }
+//---------------------------------------------------------------------
+
 if (outputNow.ok_togo()) {
   Serial.print("Output Now "); 
   Serial.println(millis()); 
