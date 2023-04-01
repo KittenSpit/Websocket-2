@@ -17,6 +17,21 @@
 #include <Arduino_JSON.h>
 #include "Wait2.h"
 
+
+#include <SPI.h>
+#include <Wire.h>
+
+#include <Adafruit_SSD1306.h>
+#include <Adafruit_GFX.h>
+
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+#define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
+#define SCREEN_ADDRESS 0x3c ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+
+
 // Replace with your network credentials
 
 const char* ssid = "PHD1 2.4";
@@ -45,6 +60,10 @@ int dutyCycle2;
 int dutyCycle3;
 int dutyCycle4;
 
+  int i=0;
+  String string_2 = "";
+  String old_string = "";
+
 //Json Variable to Hold Slider Values
 JSONVar sliderValues;
 
@@ -57,6 +76,18 @@ String getSliderValues(){
   String jsonString = JSON.stringify(sliderValues);
   return jsonString;
 }
+
+void Display_String(String _the_string,int _x,int _y,int _size,int _show)
+{
+   display.setTextSize(_size);       
+   if ((_show == 1)) {display.setTextColor(SSD1306_WHITE);}
+   else display.setTextColor(SSD1306_BLACK);
+   display.setCursor(_x, _y);
+   display.print(_the_string);
+   display.display();
+}
+
+
 
 // Initialize LittleFS
 void initFS() {
@@ -150,6 +181,15 @@ void setup() {
   pinMode(ledPin2, OUTPUT);
   pinMode(ledPin3, OUTPUT);
 
+  // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
+  if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) 
+  {
+    Serial.println(F("SSD1306 allocation failed"));
+    for(;;); // Don't proceed, loop forever
+  }
+  display.clearDisplay(); // Clear display buffer
+  display.display();
+
 
 
 // Added **************
@@ -191,6 +231,14 @@ void loop() {
   analogWrite(ledPin1, dutyCycle1);
   analogWrite(ledPin2, dutyCycle2);
   analogWrite(ledPin3, dutyCycle3);
+
+  string_2 = String(dutyCycle1);  
+
+//---------------------------------------------------------------------
+  Display_String(old_string,0,0,3,0); // pass string, x, y, size, 0=clear
+  Display_String(string_2,0,0,3,1); // pass string, x, y, size, 1=white
+  old_string=string_2;
+//---------------------------------------------------------------------
 
 if (outputNow.ok_togo()) {Serial.print("Output Now "); Serial.println(millis());}
   
