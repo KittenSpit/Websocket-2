@@ -245,24 +245,24 @@ void loop() {
 //---------------------------------------------------------------------
   if (string_1 != old_string_1)
   {
-    Display_String(old_string_1,0,0,2,0); // pass string, x, y, size, 0=clear
-    Display_String(string_1,0,0,2,1); // pass string, x, y, size, 1=white
+    Display_String(old_string_1,0,0,1,0); // pass string, x, y, size, 0=clear
+    Display_String(string_1,0,0,1,1); // pass string, x, y, size, 1=white
     old_string_1=string_1;
   }
 //---------------------------------------------------------------------
 //---------------------------------------------------------------------
   if (string_2 != old_string_2)
   {
-    Display_String(old_string_2,0,17,2,0); // pass string, x, y, size, 0=clear
-    Display_String(string_2,0,17,2,1); // pass string, x, y, size, 1=white
+    Display_String(old_string_2,44,0,1,0); // pass string, x, y, size, 0=clear
+    Display_String(string_2,44,0,1,1); // pass string, x, y, size, 1=white
     old_string_2=string_2;
   }
 //---------------------------------------------------------------------
 //---------------------------------------------------------------------
   if (string_3 != old_string_3)
   {
-    Display_String(old_string_3,0,35,2,0); // pass string, x, y, size, 0=clear
-    Display_String(string_3,0,35,2,1); // pass string, x, y, size, 1=white
+    Display_String(old_string_3,88,0,1,0); // pass string, x, y, size, 0=clear
+    Display_String(string_3,88,0,1,1); // pass string, x, y, size, 1=white
     old_string_3=string_3;
   }
 //---------------------------------------------------------------------
