@@ -37,7 +37,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 const char* ssid = "PHD1 2.4";
 const char* password = "Andrew1Laura2";
 
-  Wait2 outputNow (10000);
+  Wait2 outputNow (5000);
 
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
@@ -95,7 +95,8 @@ void initFS() {
     Serial.println("An error has occurred while mounting LittleFS");
   }
   else{
-   Serial.println("LittleFS mounted successfully");
+    Serial.println("");
+    Serial.println("LittleFS mounted successfully");
   }
 }
 
@@ -232,15 +233,16 @@ void loop() {
   analogWrite(ledPin2, dutyCycle2);
   analogWrite(ledPin3, dutyCycle3);
 
-  string_2 = String(dutyCycle1);  
-
-//---------------------------------------------------------------------
-  Display_String(old_string,0,0,3,0); // pass string, x, y, size, 0=clear
-  Display_String(string_2,0,0,3,1); // pass string, x, y, size, 1=white
-  old_string=string_2;
-//---------------------------------------------------------------------
-
+ 
+  string_2 = String(dutyCycle1); 
+if (string_2 != old_string)
+{
+  //---------------------------------------------------------------------
+   Display_String(old_string,0,0,2,0); // pass string, x, y, size, 0=clear
+   Display_String(string_2,0,0,2,1); // pass string, x, y, size, 1=white
+   old_string=string_2;
+  //---------------------------------------------------------------------
+}
 if (outputNow.ok_togo()) {Serial.print("Output Now "); Serial.println(millis());}
-  
   ws.cleanupClients();
 }
