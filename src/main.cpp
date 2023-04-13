@@ -10,11 +10,15 @@
 */
 
 #include <Arduino.h>
+#include <Arduino_JSON.h>
+#include "Button2.h" //  https://github.com/LennartHennigs/Button2
+#include "ESPRotary.h"
+
 #include <ESP8266WiFi.h>
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include "LittleFS.h"
-#include <Arduino_JSON.h>
+
 #include "Wait2.h"
 
 
@@ -24,13 +28,29 @@
 #include <Adafruit_SSD1306.h>
 #include <Adafruit_GFX.h>
 
+
+/////////////////////////////////////////////////////////////////
+
+#define ROTARY_PIN1	D5
+#define ROTARY_PIN2	D6
+#define BUTTON_PIN	D7
+
+#define CLICKS_PER_STEP   4   // this number depends on your rotary encoder 
+#define MIN_POS         -1
+#define MAX_POS         11
+#define START_POS       0
+#define INCREMENT       1  // this number is the counter increment on each step
+
+#define SERIAL_SPEED    115200
+
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 #define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
 #define SCREEN_ADDRESS 0x3c ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-
+ESPRotary r;
+Button2 b;
 
 // Replace with your network credentials
 
@@ -113,6 +133,12 @@ void initWiFi() {
     delay(1000);
   }
   Serial.println(WiFi.localIP());
+   display.setTextColor(1);
+   display.setCursor(0, 40);
+   display.print(WiFi.localIP());
+   display.display();
+ 
+  
   delay(1000);
 }
 
@@ -175,16 +201,77 @@ void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType 
   }
 }
 
+/////////////////////////////////////////////////////////////////
+
+// on change
+void rotate(ESPRotary& r) {
+  sliderValue2=r.getPosition()*10;
+  Serial.println(sliderValue2);
+  dutyCycle2 = map(sliderValue2.toInt(), 0, 100, 0, 1023);
+  notifyClients(getSliderValues());
+}
+
+// on left or right rotation
+void showDirection(ESPRotary& r) {
+  Serial.println(r.directionToString(r.getDirection()));
+}
+
+  // out of bounds event
+void upper(ESPRotary& r) {
+   Serial.println("upper bound hit");
+}
+
+// out of bounds event
+void lower(ESPRotary& r) {
+   Serial.println("lower bound hit");
+}
+
+ 
+// single click
+void click(Button2& btn) {
+  Serial.println("Click!");
+}
+
+// long click
+void resetPosition(Button2& btn) {
+   r.resetPosition();
+      sliderValue2=0;
+  dutyCycle2 = map(sliderValue2.toInt(), 0, 100, 0, 1023);
+  notifyClients(getSliderValues());
+  Serial.println("Reset!");
+}
+
+/////////////////////////////////////////////////////////////////
+
 void initWebSocket() {
   ws.onEvent(onEvent);
   server.addHandler(&ws);
 }
 
 void setup() {
-  Serial.begin(9600);
-  pinMode(ledPin1, OUTPUT);
-  pinMode(ledPin2, OUTPUT);
-  pinMode(ledPin3, OUTPUT);
+
+ // pinMode(ledPin1, OUTPUT);
+ // pinMode(ledPin2, OUTPUT);
+ // pinMode(ledPin3, OUTPUT);
+
+  Serial.begin(SERIAL_SPEED);
+  delay(50);
+  Serial.println("\n\nSimple Counter");
+  
+  //r.begin(ROTARY_PIN1, ROTARY_PIN2, CLICKS_PER_STEP);
+  r.begin(ROTARY_PIN1, ROTARY_PIN2, CLICKS_PER_STEP, MIN_POS, MAX_POS, START_POS, INCREMENT);
+  r.setChangedHandler(rotate);
+  r.setLeftRotationHandler(showDirection);
+  r.setRightRotationHandler(showDirection);
+  r.setLowerOverflowHandler(lower);
+  r.setUpperOverflowHandler(upper);
+
+  b.begin(BUTTON_PIN);
+  b.setDebounceTime(100);
+  b.setLongClickTime(300);
+  b.setTapHandler(click);
+  b.setLongClickHandler(resetPosition);
+
 
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
   if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) 
@@ -194,6 +281,7 @@ void setup() {
   }
   display.clearDisplay(); // Clear display buffer
   display.display();
+  display.setRotation(2);
 
 
 
@@ -233,9 +321,13 @@ void setup() {
 }
 
 void loop() {
-  analogWrite(ledPin1, dutyCycle1);
-  analogWrite(ledPin2, dutyCycle2);
-  analogWrite(ledPin3, dutyCycle3);
+
+  r.loop();
+  b.loop();
+
+  //analogWrite(ledPin1, dutyCycle1);
+  //analogWrite(ledPin2, dutyCycle2);
+  //analogWrite(ledPin3, dutyCycle3);
 
  
   string_1 = String(dutyCycle1); 
